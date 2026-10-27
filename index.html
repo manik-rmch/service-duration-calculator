@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0f4c5c">
+<title>কার্যকাল ও সময়কাল গণনাকারী</title>
+
+<!-- আইকন (হোম বাটন ও অন্যান্য) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- বাংলা ইউনিকোড ফন্ট: Noto Sans/Serif Bengali, Hind Siliguri (Google Fonts) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@500;600;700&display=swap" rel="stylesheet">
+<!-- SutonnyMJ-এর মতো পরিচিত বাংলা ফন্ট (ইউনিকোড): SolaimanLipi, Kalpurush, Siyam Rupali, Nikosh -->
+<link href="https://fonts.maateen.me/solaiman-lipi/font.css" rel="stylesheet">
+<link href="https://fonts.maateen.me/kalpurush/font.css" rel="stylesheet">
+<link href="https://fonts.maateen.me/siyam-rupali/font.css" rel="stylesheet">
+<link href="https://fonts.maateen.me/nikosh/font.css" rel="stylesheet">
+
+<style>
+:root{
+  color-scheme:light;
+  /* ফন্ট স্ট্যাক: প্রথমটি না থাকলে পরেরটি, এভাবে চলবে */
+  --f-sans:'Noto Sans Bengali','Hind Siliguri','Kalpurush','SolaimanLipi','Siyam Rupali','Nikosh','Mukti','Lohit Bengali','Akaash','Shonar Bangla','Nirmala UI','Vrinda',Arial,sans-serif;
+  --f-serif:'Noto Serif Bengali','Kalpurush','SolaimanLipi','Siyam Rupali','Nikosh','Nirmala UI','Vrinda',Georgia,serif;
+  --ink:#1e293b;--mute:#64748b;--line:#e2e8f0;--ind:#0f766e;--tea:#0d9488
+}
+*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{margin:0;background:#f2f6f8;color:var(--ink);font:400 16px/1.65 var(--f-sans)}
+.wrap{max-width:1040px;margin:0 auto;padding:18px 16px 48px}
+button,input,select,textarea{font-family:inherit}
+
+/* হোম বাটন স্টাইল (Home Button.txt থেকে) */
+.top-bar{display:flex;justify-content:flex-start;margin-bottom:15px}
+.btn-home{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:8px 18px;background:#e2e8f0;color:#334155;text-decoration:none;font-size:15px;font-weight:600;line-height:1.2;border-radius:8px;transition:all .3s ease}
+.btn-home:hover{background:#0f766e;color:#fff;transform:translateY(-2px)}
+
+.hero{background:linear-gradient(120deg,#0f4c5c 0%,#0d9488 100%);color:#fff;border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 10px 30px rgba(15,76,92,.25)}
+h1{font:700 clamp(22px,4.6vw,34px)/1.3 var(--f-serif);margin:0 0 6px;color:#fff}
+.sub{margin:0;color:#cfeae5;font-size:15px}
+
+.card{background:#fff;border:1px solid var(--line);border-top:5px solid var(--ind);border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:0 4px 16px rgba(15,23,42,.06)}
+h2{font:700 19px/1.3 var(--f-serif);margin:0;color:#115e59}
+.head-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.head-row h2 i{margin-right:6px}
+
+/* নীতি ও মোড */
+.rule-row{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.rule-txt{display:flex;gap:12px;align-items:flex-start;flex:1 1 320px;font-size:14px;color:#475569}
+.rule-txt i{color:#d97706;font-size:20px;margin-top:3px}
+.rule-txt b{display:block;color:#115e59;font-size:15px}
+.seg{display:flex;background:#e2e8f0;border-radius:12px;padding:5px;gap:4px}
+.seg button{border:0;background:transparent;color:#64748b;font-size:15px;font-weight:600;padding:9px 14px;border-radius:8px;cursor:pointer;transition:.25s;white-space:nowrap}
+.seg button.on{background:#fff;color:#0f766e;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+
+/* বাটন */
+.btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn-print{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:linear-gradient(120deg,#0f766e,#7c3aed);color:#fff;border:0;border-radius:9px;font:600 13.5px var(--f-sans);cursor:pointer;box-shadow:0 3px 8px rgba(15,118,110,.3)}
+.btn-add{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:#f59e0b;color:#1e293b;border:0;border-radius:9px;font:700 13.5px var(--f-sans);cursor:pointer;box-shadow:0 3px 8px rgba(245,158,11,.3)}
+.btn-print:hover,.btn-add:hover{transform:translateY(-2px)}
+.count{font-size:14px;color:var(--mute)}
+.count b{color:#0f766e}
+
+/* হিসাবের কার্ড */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:18px}
+.kc{background:#fff;border:1px solid var(--line);border-top:5px solid var(--ind);border-radius:14px;box-shadow:0 4px 16px rgba(15,23,42,.06);overflow:hidden;display:flex;flex-direction:column}
+.kc-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;background:#f8fafc;border-bottom:1px solid var(--line)}
+.kc-title{flex:1;min-width:0;border:0;border-bottom:1px solid transparent;border-radius:4px;background:transparent;font:700 16px var(--f-serif);color:#115e59;padding:3px 4px;outline:0}
+.kc-title:hover{border-bottom-color:#cbd5e1}
+.kc-title:focus{border-bottom-color:var(--ind);background:#fff}
+.kc-acts{display:flex;gap:2px;flex:none}
+.ib{border:0;background:transparent;color:#64748b;width:34px;height:34px;border-radius:8px;font-size:15px;cursor:pointer}
+.ib:hover{background:#e2e8f0;color:#0f766e}
+.ib.del:hover{color:#e11d48}
+.kc-body{padding:14px;flex:1}
+
+/* তারিখ ইনপুট (বয়স ক্যালকুলেটরের মতো) */
+.f{display:block;margin-bottom:12px;padding:8px 14px;border:2px solid #e2e8f0;border-radius:10px;background:#f8fafc;cursor:text}
+.f .l{display:block;font-size:15px;font-weight:600;color:#334155}
+.f input{width:100%;border:0;border-radius:0;background:transparent;font-size:19px;color:#1e293b;outline:0;padding:3px 0}
+.f:focus-within{border-color:#0f766e;box-shadow:0 0 0 3px #cfeae5}
+.kc-in{margin-bottom:6px}
+
+/* কার্যকাল বিবরণী */
+.sheet{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:14px;font-family:var(--f-serif)}
+.sheet-t{font:700 12px var(--f-sans);color:#92400e;letter-spacing:.04em;margin-bottom:8px}
+.srow{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-weight:700;font-size:17px;color:#1e293b}
+.srow small{font:400 13px var(--f-serif);color:#475569}
+.srow1{border-bottom:1px dashed #fcd34d;padding-bottom:5px}
+.srow2{justify-content:flex-end;padding-top:5px}
+.sline{margin:10px 0;border-bottom:2px solid #1e293b}
+.dur{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-weight:700;font-size:19px;color:#064e3b}
+.dur small{font:400 13px var(--f-serif);color:#475569}
+.tot{margin-top:10px;padding-top:8px;border-top:1px solid #fde68a;font:400 13px/1.5 var(--f-sans);color:#334155}
+.tot b{color:#047857}
+.formula{font-size:11px;color:#64748b;font-style:italic}
+.bad{color:#be123c;text-align:center;font:600 13.5px var(--f-sans);padding:4px 0}
+.kc-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;background:#f8fafc;border-top:1px solid var(--line);font-size:13px;color:var(--mute)}
+.badge{background:#d1fae5;color:#065f46;font-size:11px;font-weight:700;padding:2px 10px;border-radius:99px}
+
+.empty{padding:28px 18px;text-align:center;color:var(--mute);background:#fff;border:1.5px dashed #a7d7d0;border-radius:14px}
+.empty i{font-size:34px;color:#94a3b8;display:block;margin-bottom:6px}
+.empty p{margin:0 0 10px;font-weight:600;color:#475569}
+[hidden]{display:none!important}
+
+/* টোস্ট */
+#toast{position:fixed;right:18px;bottom:18px;background:#0f172a;color:#fff;font-size:14px;padding:10px 16px;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.3);opacity:0;transition:opacity .3s;pointer-events:none;z-index:2000;display:flex;gap:8px;align-items:center}
+#toast.show{opacity:1}
+#toast i{color:#34d399}
+
+@media(max-width:760px){
+  .wrap{padding:12px 10px 40px}
+  .hero{padding:16px 14px}
+  .card{padding:14px}
+  .seg{width:100%}.seg button{flex:1;white-space:normal;padding:9px 8px;font-size:14px}
+  .grid{grid-template-columns:1fr}
+}
+
+/* বাংলা তারিখ-পিকার (বয়স ক্যালকুলেটরের মতো, ডেস্কটপে) */
+.cal-pop{position:absolute;z-index:1000;width:17em;max-width:calc(100vw - 16px);box-sizing:border-box;padding:.2em .2em .3em;background:#fff;border:1px solid #c5c5c5;border-radius:3px;box-shadow:0 4px 14px rgba(0,0,0,.25);font-size:15px;color:#333;text-align:left}
+.cal-pop .cal-hd{display:flex;align-items:center;gap:4px;padding:.25em;margin-bottom:6px;background:#e9e9e9;border:1px solid #ddd;border-radius:3px}
+.cal-pop .cal-hd button{flex:none;width:1.9em;height:1.9em;padding:0;margin:0;border:1px solid transparent;border-radius:3px;background:transparent;color:#333;font-size:11px;line-height:normal;cursor:pointer;font-family:inherit}
+.cal-pop .cal-hd button:hover{background:#ededed;border-color:#ccc}
+.cal-pop .cal-hd select{flex:1;min-width:0;height:auto;padding:1px;border:1px solid #ccc;border-radius:3px;background:#fff;color:#333;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.cal-pop .cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;text-align:center}
+.cal-pop .cal-g b{padding:.4em 0;font-size:12px;color:#333}
+.cal-pop .cal-g button{height:auto;padding:.25em .35em;border:1px solid #c5c5c5;border-radius:0;background:#f6f6f6;color:#454545;font:inherit;font-size:14px;text-align:right;line-height:normal;cursor:pointer}
+.cal-pop .cal-g button:hover{background:#ededed;border-color:#ccc;color:#2b2b2b}
+.cal-pop .cal-g button.tod{background:#fffa90;border-color:#dad55e;color:#777620}
+.cal-pop .cal-g button.sel,.cal-pop .cal-g button.sel:hover{background:#007fff;border-color:#003eff;color:#fff}
+.cal-pop .cal-ft{display:flex;justify-content:space-between;margin-top:8px;padding:0 .2em}
+.cal-pop .cal-ft button{height:auto;padding:.3em .9em;border:1px solid #c5c5c5;border-radius:3px;background:#f6f6f6;color:#454545;font:inherit;font-size:14px;line-height:normal;cursor:pointer}
+.cal-pop .cal-ft button:hover{background:#ededed;border-color:#ccc}
+
+/* ===== প্রিন্ট শিট (স্ক্রিনে লুকানো) ===== */
+#printSheet{display:none}
+@media print{
+  @page{size:A4;margin:10mm}
+  html,body{background:#fff!important;color:#000!important}
+  .wrap>*:not(#printSheet){display:none!important}
+  .wrap{max-width:none;margin:0;padding:0}
+  #toast,.cal-pop{display:none!important}
+  #printSheet{display:block!important}
+  #printSheet .prep{text-align:center;border:2px solid #0f4c5c;background:#e3f4f1!important;border-radius:8px;padding:8px;margin-bottom:10px;font-size:13px;line-height:1.5;color:#134e4a}
+  #printSheet .prep b{font-size:15px}
+  #printSheet h2{text-align:center;font-size:18px;margin:6px 0;color:#0f4c5c}
+  #printSheet .sum{font-size:12px;margin:0 0 8px;line-height:1.55;background:#f0fdfa!important;border:1px solid #99f6e4;border-radius:6px;padding:6px 8px}
+  #printSheet .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  #printSheet .pcard{break-inside:avoid;page-break-inside:avoid;border:1.5px solid #94a3b8;border-radius:8px;overflow:hidden}
+  #printSheet .ph{display:flex;align-items:center;gap:8px;background:#0f766e!important;color:#fff;padding:5px 10px;font:700 13px var(--f-serif)}
+  #printSheet .pn{flex:none;min-width:22px;height:22px;border-radius:50%;background:#fff!important;color:#0f766e;display:grid;place-items:center;font-size:12px;font-weight:700}
+  #printSheet .sheet{border:0;border-radius:0;padding:8px 10px}
+  #printSheet .srow{font-size:14px}
+  #printSheet .dur{font-size:15px}
+  #printSheet .tot{font-size:11.5px}
+  #printSheet .pf{padding:4px 10px;background:#f1f5f9!important;border-top:1px solid #cbd5e1;font-size:11.5px;color:#334155;display:flex;justify-content:space-between;gap:6px}
+  #printSheet .pnone{text-align:center;padding:20px;border:1.5px dashed #94a3b8;border-radius:8px}
+  #printSheet .foot{margin-top:10px;font-size:11px;text-align:center;color:#475569}
+}
+</style>
+
+<style id="hisabpata-theme">
+/* ======================================================================
+   হিসাবপাতা থিম — ড্যাশবোর্ডের সাথে একই রং, ফন্ট, হেডার ও ফুটার।
+   (এটি শুধু চেহারা বদলায়; ক্যালকুলেটরের কোনো হিসাব/ফাংশন বদলায় না।)
+   ====================================================================== */
+:root{--hp-primary:#0f766e;--hp-dark:#0f4c5c;--hp-soft:#e3f4f1;--hp-ink:#1b2f3d;--hp-muted:#55687a;--hp-line:#dde6ec;--hp-page:#f2f6f8}
+
+.hp-header{background:linear-gradient(120deg,#0f766e,#164e63);color:#fff;padding:16px}
+.hp-header-inner{width:min(1120px,100%);margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 12px}
+.hp-brand{display:flex;align-items:center;gap:11px;color:#fff;text-decoration:none;min-width:0}
+.hp-mark{flex:0 0 auto;width:44px;height:44px;display:grid;place-items:center;border-radius:14px;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.22);font-size:24px;font-weight:700;line-height:1}
+.hp-name{display:block;font-size:23px;font-weight:800;letter-spacing:-.3px;line-height:1.25}
+.hp-tag{display:block;font-size:12px;opacity:.85;line-height:1.3}
+.hp-pill{flex:0 1 auto;font-size:13px;padding:8px 12px;border:1px solid rgba(255,255,255,.3);border-radius:999px;white-space:nowrap}
+.hp-footer{background:#102d3b;color:#d7e4e9;padding:22px 16px;font-size:13px;line-height:1.6}
+.hp-footer-inner{width:min(1120px,100%);margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:14px}
+.hp-footer strong{color:#fff}
+.hp-note{color:#a9c0ca}
+.hp-center{text-align:center}
+.hp-sub{font-size:12px;color:#a9c0ca;margin-top:2px}
+@media (max-width:650px){.hp-footer-inner{flex-direction:column;text-align:center;gap:4px}}
+@media (max-width:560px){.hp-name{font-size:20px}.hp-mark{width:40px;height:40px;font-size:22px}.hp-pill{font-size:12px;padding:7px 10px}}
+@media (max-width:380px){.hp-pill{font-size:11px;padding:6px 9px}}
+
+@media screen{
+  html{background:var(--hp-page)}
+  body{
+    background:var(--hp-page) !important;background-image:none !important;
+    font-family:var(--f-sans) !important;
+    color:var(--hp-ink);
+    display:block !important;margin:0 !important;padding:0 !important;min-height:100vh;
+  }
+  button,input,select,textarea{font-family:inherit}
+  .top-bar .btn-home{
+    background:var(--hp-soft) !important;color:var(--hp-dark) !important;border:1px solid #cfeae5 !important;
+    border-radius:999px !important;
+  }
+  .top-bar .btn-home:hover{background:#cfeae5 !important}
+}
+@media print{.hp-header,.hp-footer{display:none !important}}
+</style>
+</head>
+<body>
+
+<header class="hp-header">
+  <div class="hp-header-inner">
+    <a class="hp-brand" href="https://manik-rmch.github.io/dashboard/" aria-label="হিসাবপাতা — ড্যাশবোর্ডে ফিরুন">
+      <span class="hp-mark" aria-hidden="true">হি</span>
+      <span><span class="hp-name">হিসাবপাতা</span><span class="hp-tag">বাংলা স্মার্ট টুলস</span></span>
+    </a>
+    <span class="hp-pill">সহজ হিসাব • এক জায়গায়</span>
+  </div>
+</header>
+
+<div class="wrap">
+  <!-- হোম বাটন -->
+  <div class="top-bar">
+    <a href="https://manik-rmch.github.io/dashboard" class="btn-home"><i class="fa-solid fa-house"></i> হোম</a>
+  </div>
+
+  <div class="hero">
+    <h1>কার্যকাল ও সময়কাল গণনাকারী</h1>
+    <p class="sub">সরকারি/দাপ্তরিক নিয়মে দিন, মাস ও বছরের সুনির্দিষ্ট হিসাব</p>
+  </div>
+
+  <!-- গণনার নীতি ও মোড -->
+  <div class="card">
+    <div class="rule-row">
+      <div class="rule-txt">
+        <i class="fa-solid fa-circle-info"></i>
+        <div>
+          <b>গণনার মূল নীতি (Government Borrowing Rule):</b>
+          ১ মাস = ৩০ দিন এবং ১ বছর = ১২ মাস ধরে ছোট একক থেকে বিয়োগ করা হয়। বিয়োগ না গেলে বামের একক থেকে ধার নেওয়া হয়।
+        </div>
+      </div>
+      <div class="seg" role="group" aria-label="গণনা মোড">
+        <button type="button" id="modeStandardBtn" class="on" onclick="setMode('standard')">সাধারণ নিয়ম (Direct)</button>
+        <button type="button" id="modeInclusiveBtn" onclick="setMode('inclusive')">শুরুর দিনসহ (+১ দিন)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- তালিকার শিরোনাম ও বাটন -->
+  <div class="head-row">
+    <h2><i class="fa-solid fa-list-check"></i> উদাহরণ ও হিসাব তালিকা</h2>
+    <div class="btns">
+      <span class="count">মোট হিসাব: <b id="totalCardsCount">০</b> টি</span>
+      <button type="button" class="btn-print" onclick="doPrint()"><i class="fa-solid fa-print"></i> প্রিন্ট</button>
+      <button type="button" class="btn-add" onclick="addNewCalculation()"><i class="fa-solid fa-plus"></i> নতুন হিসাব</button>
+    </div>
+  </div>
+
+  <div id="cardsGrid" class="grid"></div>
+
+  <div id="emptyState" class="empty" hidden>
+    <i class="fa-regular fa-folder-open"></i>
+    <p>কোনো হিসাব যুক্ত করা নেই!</p>
+    <button type="button" class="btn-add" onclick="addNewCalculation()"><i class="fa-solid fa-plus"></i> নতুন হিসাব যোগ করুন</button>
+  </div>
+
+  <!-- প্রিন্ট শিট (শুধু প্রিন্টে দেখা যায়) -->
+  <div id="printSheet"></div>
+</div>
+
+<div id="toast"><i class="fa-solid fa-circle-check"></i><span id="toastMsg"></span></div>
+
+<script>
+var BN="০১২৩৪৫৬৭৮৯",
+MN=["জানুয়ারি","ফেব্রুয়ারি","মার্চ","এপ্রিল","মে","জুন","জুলাই","আগস্ট","সেপ্টেম্বর","অক্টোবর","নভেম্বর","ডিসেম্বর"],
+BADD="সঠিক তারিখ দিন, যেমন ০৭/০৫/২০২৫";
+var calculationMode='standard',cardList=[],seq=0;
+
+function $(i){return document.getElementById(i)}
+function toBnNum(n){if(n===null||n===undefined)return"০";return String(n).replace(/\d/g,function(d){return BN[d]})}
+var bn=toBnNum;
+function pad2Bn(n){return toBnNum(String(n).padStart(2,"0"))}
+function en(s){return s.replace(/[০-৯]/g,function(c){return BN.indexOf(c)})}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function dim(y,m){return new Date(y,m+1,0).getDate()}
+function setV(el,v){el.value=v;el._p=v}
+function two(n){return("0"+n).slice(-2)}
+function dstr(o){return two(o.d)+"/"+two(o.m+1)+"/"+o.y}
+function today(){var t=new Date();return{y:t.getFullYear(),m:t.getMonth(),d:t.getDate()}}
+
+/* তারিখ ইনপুট মাস্ক (dd/mm/yyyy) — বয়স ক্যালকুলেটরের মতোই */
+function maskEl(el,L,S){var pv=el._p||"",nv=en(el.value),c=el.selectionStart,T=L.reduce(function(a,b){return a+b}),z=function(x){return x==="_"||/\d/.test(x)},i,t,k=0,n=0,q=0,raw,pos,o="",p=0,s;
+if(c==null)c=nv.length;var re=Math.max(0,pv.length-(nv.length-c)),a=0;
+while(a<c&&a<re&&pv[a]===nv[a])a++;
+var ins=nv.slice(a,c).replace(/\D/g,""),rem=re-a,del=!ins&&rem>0;
+if(del){if(!/\d/.test(pv.slice(a,re))){i=a-1;while(i>=0&&!/\d/.test(pv[i]))i--;if(i>=0){a=i;re=i+1}else re=a}
+if(re>a){raw=/[0-9_]/.test(pv.slice(re))?pv.slice(0,a)+pv.slice(a,re).replace(/\d/g,"_")+pv.slice(re):pv.slice(0,a)+pv.slice(re)}else raw=pv;pos=a}
+else if(ins){t=a;while(t<pv.length&&!z(pv[t]))t++;var full=(pv.match(/\d/g)||[]).length>=T&&pv.indexOf("_")<0;
+if(rem===0&&ins.length===1&&t<pv.length&&(pv[t]==="_"||full)){raw=pv.slice(0,t)+ins+pv.slice(t+1);pos=t+1}else{raw=pv.slice(0,a)+ins+pv.slice(re);pos=a+ins.length}}
+else{raw=nv;pos=c}
+var v=raw.replace(/[^0-9_]/g,"").slice(0,T).replace(/_+$/,"");
+for(i=0;i<Math.min(pos,raw.length);i++)if(z(raw[i]))k++;
+for(i=0;i<L.length;i++){s=v.slice(p,p+L[i]);if(!s)break;o+=s;p+=L[i];if(s.length===L[i]&&i<L.length-1&&(p<v.length||!del))o+=S[i]}
+for(;q<o.length&&n<k;q++)if(z(o[q]))n++;
+if(!del)while(q<o.length&&!z(o[q])&&k>0)q++;
+setV(el,o);try{el.setSelectionRange(q,q)}catch(e){}}
+function D(s){var m=/^(\d\d)\/(\d\d)\/(\d{4})$/.exec(s);if(!m)return(s.length<10||s.indexOf("_")>=0)?null:false;var d=+m[1],o=+m[2]-1,y=+m[3];return(y<1900||y>2100||o>11||d<1||d>dim(y,o))?false:{y:y,m:o,d:d}}
+function fmtD(o){return bn(o.d)+" "+MN[o.m]+" "+bn(o.y)}
+function onDate(el,fn){el.addEventListener("input",function(){maskEl(el,[2,2,4],["/","/"]);if(fn)fn()})}
+
+/* গণনার মূল নিয়ম (আগের মতোই) — e ও s হলো {y,m,d} তারিখ */
+function calculateBengaliDuration(e,s,isInclusive){
+  if(!e||!s)return{years:0,months:0,days:0,totalDays:0,valid:false};
+  var eY=e.y,eM=e.m+1,eD=e.d,sY=s.y,sM=s.m+1,sD=s.d;
+  if(isInclusive){eD+=1}
+  var days=eD-sD,months=eM-sM,years=eY-sY;
+  if(days<0){days+=30;months-=1}
+  if(months<0){months+=12;years-=1}
+  if(years<0){return{years:0,months:0,days:0,totalDays:0,valid:false,error:'পর্যন্ত তারিখটি হইতে তারিখের পূর্বের হতে পারে না'}}
+  var totalDays=(years*365)+(months*30)+days;
+  return{years:years,months:months,days:days,totalDays:totalDays,valid:true};
+}
+
+function fp(o){return o?bn(o.y)+" – "+pad2Bn(o.m+1)+" – "+pad2Bn(o.d):"০০০০ – ০০ – ০০"}
+function modeBadge(){return calculationMode==='inclusive'?'+১ দিন যুক্ত':'স্ট্যান্ডার্ড'}
+function stateOf(it){
+  var s=D(it.startDate),e=D(it.endDate),du=(s&&e)?calculateBengaliDuration(e,s,calculationMode==='inclusive'):null;
+  return{s:s,e:e,du:du,bad:(s===false||e===false)?BADD:""};
+}
+function sheetHtml(st){
+  var h='<div class="sheet-t">কার্যকাল বিবরণী</div>'
+   +'<div class="srow srow1"><span>কার্যকাল:</span><span>'+fp(st.e)+' <small>পর্যন্ত</small></span></div>'
+   +'<div class="srow srow2"><span>'+fp(st.s)+' <small>হইতে</small></span></div>'
+   +'<div class="sline"></div>';
+  var du=st.du;
+  if(du&&du.valid){
+    h+='<div class="dur"><span>সময়কাল:</span><span>'+bn(du.years)+' <small>ব</small> '+bn(du.months)+' <small>মা</small> '+bn(du.days)+' <small>দি</small></span></div>'
+     +'<div class="tot">মোট দিন: <b>'+bn(du.totalDays)+' দিন</b><div class="formula">(সূত্র: (বছর × ৩৬৫) + (মাস × ৩০) + দিন।)</div></div>';
+  }else{
+    h+='<div class="bad">'+(st.bad||(du&&du.error)||'সঠিক তারিখ নির্বাচন করুন')+'</div>';
+  }
+  return h;
+}
+function totalTxt(du){return du&&du.valid?bn(du.years)+' বছর, '+bn(du.months)+' মাস, '+bn(du.days)+' দিন':'অকার্যকর'}
+
+/* কার্ডের ফলাফল অংশ নতুন করে আঁকা (ইনপুট অক্ষত থাকে, তাই টাইপ করতে অসুবিধা হয় না) */
+function refreshCard(it){
+  var st=stateOf(it);
+  it.el.querySelector('.sheet').innerHTML=sheetHtml(st);
+  it.el.querySelector('.kc-foot').innerHTML='<span>মোট: '+totalTxt(st.du)+'</span><span class="badge">'+modeBadge()+'</span>';
+}
+function refreshAll(){cardList.forEach(refreshCard);$('totalCardsCount').textContent=toBnNum(cardList.length);$('emptyState').hidden=cardList.length>0}
+
+function createCard(it){
+  var id=it.id,el=document.createElement('div');
+  el.className='kc';el.dataset.id=id;
+  el.innerHTML=
+   '<div class="kc-head"><input type="text" class="kc-title" placeholder="শিরোনাম দিন" aria-label="শিরোনাম">'
+  +'<div class="kc-acts"><button type="button" class="ib" data-a="copy" title="কপি করুন"><i class="fa-regular fa-copy"></i></button>'
+  +'<button type="button" class="ib del" data-a="del" title="মুছে ফেলুন"><i class="fa-regular fa-trash-can"></i></button></div></div>'
+  +'<div class="kc-body"><div class="kc-in">'
+  +'<label class="f"><span class="l">📅 হইতে তারিখ (Start Date):</span><input type="text" id="s-'+id+'" inputmode="numeric" enterkeyhint="next" autocomplete="off" placeholder="dd/mm/yyyy"></label>'
+  +'<label class="f"><span class="l">📆 পর্যন্ত তারিখ (End Date):</span><input type="text" id="e-'+id+'" inputmode="numeric" enterkeyhint="done" autocomplete="off" placeholder="dd/mm/yyyy"></label>'
+  +'</div><div class="sheet"></div></div><div class="kc-foot"></div>';
+  $('cardsGrid').appendChild(el);
+  it.el=el;
+  el.querySelector('.kc-title').value=it.title;
+  var si=$('s-'+id),ei=$('e-'+id);
+  onDate(si,function(){it.startDate=si.value;refreshCard(it)});
+  onDate(ei,function(){it.endDate=ei.value;refreshCard(it)});
+  /* হইতে তারিখে Enter চাপলে পর্যন্ত তারিখের ঘরে যাবে */
+  si.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.isComposing){e.preventDefault();ei.focus();try{ei.select()}catch(x){}}});
+  ei.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.isComposing){e.preventDefault();ei.blur()}});
+  attachCal('s-'+id);attachCal('e-'+id);
+  refreshCard(it);
+}
+
+function setMode(mode){
+  calculationMode=mode;
+  $('modeStandardBtn').classList.toggle('on',mode==='standard');
+  $('modeInclusiveBtn').classList.toggle('on',mode==='inclusive');
+  showToast(mode==='standard'?"সাধারণ সাবট্র্যাকশন মোড চালিত হলো":"শুরুর দিন অন্তর্ভুক্ত মোড (+১ দিন) চালিত হলো");
+  refreshAll();
+}
+function addNewCalculation(){
+  var it={id:'calc-'+Date.now()+'-'+(seq++),title:toBnNum(cardList.length+1)+'- নতুন উদাহরণ',startDate:'',endDate:''};
+  cardList.push(it);createCard(it);refreshAll();
+  showToast("নতুন গণনার কার্ড যোগ করা হয়েছে");
+}
+function deleteCard(id){
+  var it=cardList.filter(function(c){return c.id===id})[0];
+  if(it&&it.el)it.el.remove();
+  cardList=cardList.filter(function(c){return c.id!==id});
+  refreshAll();showToast("কার্ডটি মুছে ফেলা হয়েছে");
+}
+function copyCardText(id){
+  var it=cardList.filter(function(c){return c.id===id})[0];if(!it)return;
+  var st=stateOf(it),du=st.du||{years:0,months:0,days:0,totalDays:0};
+  var t=it.title+"\nকার্যকাল:\n  "+fp(st.e)+" পর্যন্ত\n  "+fp(st.s)+" হইতে\n-----------------------\nসময়কাল: "+bn(du.years)+" ব  "+bn(du.months)+" মা  "+bn(du.days)+" দি\nমোট দিন: "+bn(du.totalDays)+" দিন\n(সূত্র: (বছর × ৩৬৫) + (মাস × ৩০) + দিন।)";
+  var d=document.createElement("textarea");document.body.appendChild(d);d.value=t;d.select();document.execCommand("copy");document.body.removeChild(d);
+  showToast("টেক্সট ক্লিপবোর্ডে কপি করা হয়েছে!");
+}
+var tt;
+function showToast(m){var t=$('toast');$('toastMsg').textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show')},2500)}
+
+$('cardsGrid').addEventListener('click',function(e){
+  var b=e.target.closest('button[data-a]');if(!b)return;
+  var id=b.closest('.kc').dataset.id;
+  if(b.dataset.a==='copy')copyCardText(id);else if(b.dataset.a==='del')deleteCard(id);
+});
+$('cardsGrid').addEventListener('input',function(e){
+  if(!e.target.classList.contains('kc-title'))return;
+  var it=cardList.filter(function(c){return c.id===e.target.closest('.kc').dataset.id})[0];
+  if(it)it.title=e.target.value;
+});
+
+/* ===== প্রিন্ট ===== */
+function preparePrint(){
+  var items=[],inc=calculationMode==='inclusive';
+  cardList.forEach(function(it){var st=stateOf(it);if(st.du&&st.du.valid)items.push({it:it,st:st})});
+  var h='<div class="prep"><b>প্রস্তুতকারক: মোঃ মানিক</b><br>গাড়ি চালক, রাজশাহী মেডিকেল কলেজ হাসপাতাল, রাজশাহী।<br>মোবাইল: ০১৭২৯-৮১৫২৯১</div>'
+   +'<h2>কার্যকাল ও সময়কাল গণনা বিবরণী</h2>'
+   +'<p class="sum">গণনা পদ্ধতি: '+(inc?'শুরুর দিনসহ (+১ দিন)':'সাধারণ নিয়ম (Direct)')+' | মোট হিসাব: '+bn(items.length)+' টি | প্রিন্টের তারিখ: '+fmtD(today())+'</p>';
+  if(!items.length){h+='<div class="pnone">প্রিন্ট করার মতো কোনো সঠিক হিসাব নেই।</div>'}
+  else{
+    h+='<div class="pgrid">'+items.map(function(x,i){
+      return '<div class="pcard"><div class="ph"><span class="pn">'+bn(i+1)+'</span><span>'+esc(x.it.title)+'</span></div>'
+       +'<div class="sheet">'+sheetHtml(x.st)+'</div>'
+       +'<div class="pf"><span>মোট: '+totalTxt(x.st.du)+'</span><span>'+modeBadge()+'</span></div></div>';
+    }).join('')+'</div>';
+  }
+  h+='<div class="foot">গণনার নীতি: ১ মাস = ৩০ দিন এবং ১ বছর = ১২ মাস ধরে ছোট একক থেকে বিয়োগ করা হয়; বিয়োগ না গেলে বামের একক থেকে ধার নেওয়া হয়।</div>';
+  $('printSheet').innerHTML=h;
+  return items.length;
+}
+function doPrint(){
+  if(!preparePrint()){showToast("প্রিন্ট করতে অন্তত একটি সঠিক হিসাব দিন");return}
+  window.print();
+}
+window.addEventListener('beforeprint',preparePrint);
+
+window.onload=function(){cardList=[];refreshAll()};
+
+/* ===== বাংলা ক্যালেন্ডার পপআপ (ডেস্কটপে; বয়স ক্যালকুলেটরের মতো) ===== */
+window.attachCal=function(){};
+(function(){
+if(!window.matchMedia||!matchMedia("(hover:hover) and (pointer:fine)").matches)return;
+var WD=["শনি","রবি","সোম","মঙ্গল","বুধ","বৃহ","শুক্র"],pop,cur,vy,vm,LO=1930,HI=2100;
+function render(){var t=today(),s=D(cur.value),i,h='<div class="cal-hd"><button type="button" data-a="pm" title="গত মাস">◀</button><select data-a="m">';
+for(i=0;i<12;i++)h+='<option value="'+i+'"'+(i===vm?" selected":"")+">"+MN[i]+"</option>";
+h+='</select><select data-a="y">';for(i=LO;i<=HI;i++)h+='<option value="'+i+'"'+(i===vy?" selected":"")+">"+bn(i)+"</option>";
+h+='</select><button type="button" data-a="nm" title="পরের মাস">▶</button></div><div class="cal-g">';
+WD.forEach(function(w){h+="<b>"+w+"</b>"});
+var off=(new Date(vy,vm,1).getDay()+1)%7,n=dim(vy,vm);
+for(i=0;i<off;i++)h+="<span></span>";
+for(i=1;i<=n;i++){var c=(s&&s.y===vy&&s.m===vm&&s.d===i?" sel":"")+(t.y===vy&&t.m===vm&&t.d===i?" tod":"");h+='<button type="button" data-d="'+i+'" class="'+c+'">'+bn(i)+"</button>"}
+pop.innerHTML=h+'</div><div class="cal-ft"><button type="button" data-a="t">আজ</button><button type="button" data-a="x">মুছুন</button></div>'}
+function close(){if(pop)pop.style.display="none";cur=null}
+function pick(o){var el=cur;setV(el,o?dstr(o):"");el.dispatchEvent(new Event("input",{bubbles:true}));close()}
+function go(d){var t=vy*12+vm+d,y=Math.floor(t/12);if(y<LO||y>HI)return;vy=y;vm=t-y*12}
+function build(){pop=document.createElement("div");pop.className="cal-pop";pop.style.display="none";
+pop.addEventListener("mousedown",function(e){if(!/SELECT|OPTION/.test(e.target.tagName))e.preventDefault()});
+pop.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;var a=b.dataset.a;if(b.dataset.d)return pick({y:vy,m:vm,d:+b.dataset.d});
+if(a==="py")vy=Math.max(LO,vy-1);else if(a==="ny")vy=Math.min(HI,vy+1);else if(a==="pm")go(-1);else if(a==="nm")go(1);else if(a==="t")return pick(today());else if(a==="x")return pick(null);render()});
+pop.addEventListener("change",function(e){var a=e.target.dataset.a;if(a==="m")vm=+e.target.value;if(a==="y")vy=+e.target.value;render()});
+document.body.appendChild(pop);
+document.addEventListener("mousedown",function(e){if(!cur)return;var bx=cur.closest(".f")||cur;if(!pop.contains(e.target)&&!bx.contains(e.target))close()});
+document.addEventListener("keydown",function(e){if(cur&&(e.key==="Escape"||e.key==="Tab"||e.key==="Enter"))close()})}
+function open(el){if(!pop)build();cur=el;var s=D(el.value),t=today();if(s){vy=s.y;vm=s.m}else{vy=Math.max(LO,Math.min(HI,t.y+(el._dy||0)));vm=t.m}
+render();var b=(el.closest(".f")||el).getBoundingClientRect();pop.style.display="block";
+var w=pop.offsetWidth,h=pop.offsetHeight,l=Math.min(b.left+scrollX,scrollX+document.documentElement.clientWidth-w-8),tp=b.bottom+scrollY+4;
+if(b.bottom+h+8>innerHeight&&b.top>h+8)tp=b.top+scrollY-h-4;
+pop.style.left=Math.max(8,l)+"px";pop.style.top=tp+"px"}
+window.attachCal=function(id,dy){var el=$(id);el._dy=dy||0;(el.closest(".f")||el).addEventListener("click",function(){open(el)});
+el.addEventListener("input",function(){if(cur===el){if(D(el.value)){close();return}render()}})}
+})();
+</script>
+
+<footer class="hp-footer">
+  <div class="hp-footer-inner">
+    <div><strong>হিসাবপাতা</strong> · বাংলা স্মার্ট টুলস</div>
+    <div class="hp-center">
+      <div>পরিকল্পনা ও প্রস্তুতিতে: মোঃ মানিক</div>
+      <div class="hp-sub">গাড়ি চালক, রাজশাহী মেডিকেল কলেজ হাসপাতাল, রাজশাহী। মোবাইলঃ ০১৭২৯-৮১৫২৯১</div>
+    </div>
+    <div class="hp-note">সহজ হিসাব, সবার জন্য</div>
+  </div>
+</footer>
+</body>
+</html>
